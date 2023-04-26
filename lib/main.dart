@@ -8,6 +8,9 @@ final helloWorldProvider = Provider((ref) => 'Hello World!');
 void main() {
   // We need to wrap the entire application in a "ProviderScope" widget.
   // This is where the state of our providers will be stored.
+
+  //Providers are fully immutable.
+  // Declaring a provider is no different from declaring a function, and providers are testable and maintainable.
   runApp(const ProviderScope(child: MyApp()));
 }
 
