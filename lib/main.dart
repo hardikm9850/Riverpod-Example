@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hello_world/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-// We create a "provider", which will store a value (here "Hello world").
-// By using a provider, this allows us to mock/override the value exposed.
-final helloWorldProvider = Provider((ref) => 'Hello World!');
 
 void main() {
   // We need to wrap the entire application in a "ProviderScope" widget.
@@ -11,11 +8,40 @@ void main() {
 
   //Providers are fully immutable.
   // Declaring a provider is no different from declaring a function, and providers are testable and maintainable.
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: MyHomePage()));
+}
+
+class MyHomePage extends ConsumerWidget {
+  const MyHomePage({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: const Text('Riverpod Example')),
+        body: Column(
+          children: [
+            TextField(
+              onChanged: (value) => {
+                ref.read(stateProvider.notifier).update((state) => value)
+              },
+            ),
+            Center(
+              child: Text(ref.watch(stateProvider)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class MyApp extends ConsumerWidget {
   const MyApp({Key? key}) : super(key: key);
+  // here, entire widget tree will rebuild when provider value change
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,4 +57,26 @@ class MyApp extends ConsumerWidget {
     );
   }
 }
+
+class MyAppWithConsumerBuilder extends StatelessWidget {
+  const MyAppWithConsumerBuilder({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+
+    return MaterialApp(
+      home: Consumer(
+        builder: (context,ref,child) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Riverpod Example')),
+            body: Center(
+              child: Text(ref.watch(helloWorldProvider)),
+            ),
+          );
+        }
+      ),
+    );
+  }
+}
+
 
