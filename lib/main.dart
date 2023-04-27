@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hello_world/providers.dart';
+import 'package:flutter_hello_world/state_provider/home_page.dart';
+import 'package:flutter_hello_world/state_provider_notifier/home_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
@@ -8,35 +10,7 @@ void main() {
 
   //Providers are fully immutable.
   // Declaring a provider is no different from declaring a function, and providers are testable and maintainable.
-  runApp(const ProviderScope(child: MyHomePage()));
-}
-
-class MyHomePage extends ConsumerWidget {
-  const MyHomePage({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Riverpod Example')),
-        body: Column(
-          children: [
-            TextField(
-              onChanged: (value) => {
-                ref.read(stateProvider.notifier).update((state) => value)
-              },
-            ),
-            Center(
-              child: Text(ref.watch(stateProvider)),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {

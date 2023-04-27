@@ -5,12 +5,32 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_hello_world/model/user_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:flutter_hello_world/main.dart';
 
 void main() {
+  widgetTest();
+}
+
+void widgetTest(){
+  testWidgets('description', (widgetTester) async {
+    await widgetTester.pumpWidget(const ProviderScope(child: MyApp()));
+
+    expect(find.text('Hello World!'), findsOneWidget);
+    expect(find.text('1'), findsNothing);
+  });
+
+
+}
+
+
+void example(){
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());
