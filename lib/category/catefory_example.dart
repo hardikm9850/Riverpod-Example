@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import 'providers.dart';
+
+// Article : https://bartvwezel.nl/flutter/flutter-riverpod-example-category-selection/
 void main() {
-  runApp(ProviderScope(child: MultipleCategorySelection()));
+  runApp(const ProviderScope(child: MultipleCategorySelection()));
 }
 
 class MultipleCategorySelection extends StatelessWidget {
+  const MultipleCategorySelection({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,15 +19,15 @@ class MultipleCategorySelection extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: Scaffold(
-        appBar: AppBar(title: Text("Interactive categories")),
+        appBar: AppBar(title: const Text("Interactive categories")),
         body: Column(
           children: [
-            CategoryFilter(),
+            const CategoryFilter(),
             Container(
               color: Colors.green,
               height: 2,
             ),
-            SelectedCategories()
+            const SelectedCategories()
           ],
         ),
       ),
@@ -30,18 +35,28 @@ class MultipleCategorySelection extends StatelessWidget {
   }
 }
 
-class CategoryFilter extends ConsumerWidget {
+void toggleCheckBox(WidgetRef ref, Category value) {
+  var notifier = ref.read(categoryListProvider.notifier);
+  notifier.toggle(value);
+}
+
+class CategoryFilter extends HookConsumerWidget {
+  const CategoryFilter({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedCategoryList = ref.watch(selectedCategories);
+    print("\n1");
+    final selectedCategoryList = ref.watch(selectedCategoriesProvider);
     final categoryList = ref.watch(allCategories);
 
     final notifier = ref.watch(categoryListProvider.notifier);
+
     return Flexible(
       child: ListView.builder(
           itemCount: categoryList.length,
           itemBuilder: (BuildContext context, int index) {
             return CheckboxListTile(
+              key: Key(categoryList[index].name),
               value: selectedCategoryList.contains(categoryList[index]),
               onChanged: (bool? selected) {
                 notifier.toggle(categoryList[index]);
@@ -55,11 +70,12 @@ class CategoryFilter extends ConsumerWidget {
   }
 }
 
-class SelectedCategories extends ConsumerWidget {
+class SelectedCategories extends HookConsumerWidget {
+  const SelectedCategories({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final categoryList = ref.watch(selectedCategories);
-
+    final categoryList = ref.watch(selectedCategoriesProvider);
     return Flexible(
       child: ListView.builder(
           itemCount: categoryList.length,
@@ -74,7 +90,9 @@ class SelectedCategories extends ConsumerWidget {
   }
 }
 
-class CategoryWidget extends ConsumerWidget {
+class CategoryWidget extends HookConsumerWidget {
+  const CategoryWidget({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final category = ref.watch(selectedCategory);
@@ -88,66 +106,23 @@ class CategoryWidget extends ConsumerWidget {
   }
 }
 
-CategoryList createCategoryList(List<Category> values) {
-  final Map<Category, bool> categories = Map<Category, bool>();
-  values.forEach((value) {
+CategoryListStateNotifier createCategoryList(List<Category> values) {
+  final Map<Category, bool> categories = <Category, bool>{};
+  for (var value in values) {
     categories.putIfAbsent(value, () => false);
-  });
-  return CategoryList(categories);
+  }
+  return CategoryListStateNotifier(categories);
 }
 
+@immutable
 class Category {
   final String name;
   final Color color;
 
-  Category(this.name,  this.color);
+  const Category(this.name, this.color);
 
-  Category copyWith({
-    String? name,
-    Color? color,
-  }) {
-    return Category(
-      name ?? this.name,
-      color ?? this.color,
-    );
+  @override
+  String toString() {
+    return "name : $name, color : $color";
   }
 }
-
-// Providers ------------
-
-class CategoryList extends StateNotifier<Map<Category, bool>> {
-  CategoryList(Map<Category, bool> state) : super(state);
-
-  void toggle(Category item) {
-
-    final currentValue = state[item];
-    if (currentValue != null) {
-      //either this
-      state[item] = !currentValue;
-      state = state;
-
-      // or this
-      state.update(item, (value) => !currentValue);
-    }
-  }
-}
-
-final categoryListProvider =
-    StateNotifierProvider<CategoryList, Map<Category, bool>>(
-        (_) => createCategoryList([
-              Category("Apple", Colors.red[700]!),
-              Category("Orange",Colors.orange[700]!),
-              Category("Banana", Colors.yellow[700]!)
-            ]));
-
-final selectedCategories = Provider((ref) => ref
-    .watch(categoryListProvider)
-    .entries
-    .where((MapEntry<Category, bool> category) => category.value)
-    .map((e) => e.key)
-    .toList());
-
-final allCategories =
-    Provider((ref) => ref.watch(categoryListProvider).keys.toList());
-
-final selectedCategory = Provider<Category?>((ref) => null);

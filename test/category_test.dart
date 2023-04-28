@@ -1,42 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hello_world/category/catefory_example.dart';
+import 'package:flutter_hello_world/category/providers.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 void main() {
   testWidgets('Simple interaction test without mocking or overriding',
-      (tester) async {
-    await tester
-        .pumpWidget(ProviderScope(child: HookBuilder(builder: (context) {
-      return MaterialApp(home: MultipleCategorySelection());
-    })));
+          (tester) async {
+        await tester
+            .pumpWidget(ProviderScope(child: HookBuilder(builder: (context) {
+          return MaterialApp(home: MultipleCategorySelection());
+        })));
 
-    var categories = tester.widgetList(find.byType(CategoryWidget));
-    expect(categories.length, 3);
+        var categories = tester.widgetList(find.byType(CategoryWidget));
+        expect(categories.length, 3);
 
-    expect((tester.firstWidget(find.byType(Text)) as Text).style!.color,
-        Colors.red[700]);
-    expect((tester.firstWidget(find.byType(Text)) as Text).data, "Apple");
+        expect((tester.firstWidget(find.byType(Text)) as Text).style!.color,
+            Colors.red[700]);
+        expect((tester.firstWidget(find.byType(Text)) as Text).data, "Apple");
 
-    var checkboxes = tester.widgetList(find.byType(Checkbox));
-    expect(checkboxes.length, 3);
+        var checkboxes = tester.widgetList(find.byType(Checkbox));
+        expect(checkboxes.length, 3);
 
-    await tester.tap(find.byWidget(checkboxes.first));
-    await tester.pump();
+        await tester.tap(find.byWidget(checkboxes.first));
+        await tester.pump();
 
-    categories = tester.widgetList(find.byType(CategoryWidget));
-    expect(categories.length, 4);
+        categories = tester.widgetList(find.byType(CategoryWidget));
+        expect(categories.length, 4);
 
-    checkboxes = tester.widgetList(find.byType(Checkbox));
-    expect(checkboxes.length, 3);
+        checkboxes = tester.widgetList(find.byType(Checkbox));
+        expect(checkboxes.length, 3);
 
-    await tester.tap(find.byWidget(checkboxes.first));
-    await tester.pump();
+        await tester.tap(find.byWidget(checkboxes.first));
+        await tester.pump();
 
-    categories = tester.widgetList(find.byType(CategoryWidget));
-    expect(categories.length, 3);
-  });
+        categories = tester.widgetList(find.byType(CategoryWidget));
+        expect(categories.length, 3);
+      });
 
   testWidgets('Override the current scope', (tester) async {
     await tester.pumpWidget(ProviderScope(
@@ -53,31 +54,31 @@ void main() {
   });
 
   testWidgets('Verify that there is one Category Widget when false',
-      (tester) async {
-    final state = Map<Category, bool>();
-    state.putIfAbsent(Category("Pear", Colors.green), () => false);
-    await tester.pumpWidget(ProviderScope(
-        overrides: [
-          categoryListProvider.overrideWith((ref) => CategoryList(state))
-        ],
-        child: HookBuilder(builder: (context) {
-          return MaterialApp(home: MultipleCategorySelection());
-        })));
+          (tester) async {
+        final state = Map<Category, bool>();
+        state.putIfAbsent(Category("Pear", Colors.green), () => false);
+        await tester.pumpWidget(ProviderScope(
+            overrides: [
+              categoryListProvider.overrideWithValue(CategoryListStateNotifier(state)),
+            ],
+            child: HookBuilder(builder: (context) {
+              return MaterialApp(home: MultipleCategorySelection());
+            })));
 
-    expect((tester.firstWidget(find.byType(Text)) as Text).style!.color,
-        Colors.green);
-    expect((tester.firstWidget(find.byType(Text)) as Text).data, "Pear");
+        expect((tester.firstWidget(find.byType(Text)) as Text).style!.color,
+            Colors.green);
+        expect((tester.firstWidget(find.byType(Text)) as Text).data, "Pear");
 
-    var categories = tester.widgetList(find.byType(CategoryWidget));
-    expect(categories.length, 1);
-  });
+        var categories = tester.widgetList(find.byType(CategoryWidget));
+        expect(categories.length, 1);
+      });
 
   testWidgets('Verify there are two category widgets', (tester) async {
     final state = Map<Category, bool>();
     state.putIfAbsent(Category("Pear", Colors.green), () => true);
     await tester.pumpWidget(ProviderScope(
         overrides: [
-          categoryListProvider.overrideWith((ref) => CategoryList(state))
+          categoryListProvider.overrideWithValue(CategoryListStateNotifier(state)),
         ],
         child: HookBuilder(builder: (context) {
           return MaterialApp(home: MultipleCategorySelection());
@@ -97,10 +98,10 @@ void main() {
     final state = Map<Category, bool>();
     final category = Category("Pear", Colors.green);
     state.putIfAbsent(category, () => true);
-    final mockStateNotifier = CategoryList(state);
+    final mockStateNotifier = CategoryListStateNotifier(state);
     await tester.pumpWidget(ProviderScope(
         overrides: [
-          categoryListProvider.overrideWith((ref) => mockStateNotifier)
+          categoryListProvider.overrideWithValue(mockStateNotifier),
         ],
         child: HookBuilder(builder: (context) {
           return MaterialApp(home: MultipleCategorySelection());

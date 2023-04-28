@@ -25,6 +25,6 @@ class UserNotifier extends StateNotifier<User> {
   }
 
   void updateAge(String age) {
-    state.copyWith(state.name, int.parse(age));
+    state = state.copyWith(state.name, int.parse(age));
   }
 }

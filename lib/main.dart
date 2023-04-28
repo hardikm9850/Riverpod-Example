@@ -10,7 +10,11 @@ void main() {
 
   //Providers are fully immutable.
   // Declaring a provider is no different from declaring a function, and providers are testable and maintainable.
-  runApp(const ProviderScope(child: MyApp()));
+  //runApp(const ProviderScope(child: MyApp()));
+
+
+  runApp(const ProviderScope(child: HomePageSPN()));
+
 }
 
 class MyApp extends ConsumerWidget {
