@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'catefory_example.dart';
+import 'category_example.dart';
 
 final categoryListProvider =
     StateNotifierProvider<CategoryListStateNotifier, Map<Category, bool>>(

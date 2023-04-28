@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hello_world/category/catefory_example.dart';
+import 'package:flutter_hello_world/category/category_example.dart';
 import 'package:flutter_hello_world/category/providers.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_test/flutter_test.dart';
